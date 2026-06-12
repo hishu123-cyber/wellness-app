@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>体质养生·大健康 APP 宣传视频</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #1a1a2e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+#player {
+  width: 360px;
+  height: 640px;
+  background: #0d0d1a;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+#scene {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Scene content */
+.scene-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.scene-content.active {
+  opacity: 1;
+}
+
+.scene-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Text overlays */
+.text-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  text-align: center;
+  z-index: 10;
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.text-overlay.top {
+  top: 20px;
+}
+
+.text-overlay.bottom {
+  bottom: 60px;
+}
+
+.text-overlay h2 {
+  font-size: 22px;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.text-overlay .sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  margin-top: 6px;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.8);
+}
+
+.text-overlay .highlight {
+  color: #4CAF50;
+  font-weight: 700;
+}
+
+.text-overlay .big-num {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Black screen with text */
+.black-screen {
+  background: #0a0a0a;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.8s;
+}
+
+.black-screen.active {
+  opacity: 1;
+}
+
+.black-screen h1 {
+  font-size: 28px;
+  color: #fff;
+  margin-bottom: 8px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.black-screen p {
+  font-size: 16px;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.black-screen .stat-line {
+  font-size: 18px;
+  color: #ff6b6b;
+  margin: 4px 0;
+}
+
+.black-screen .stat-line.green {
+  color: #4CAF50;
+}
+
+/* Subtitles */
+#subtitles {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  right: 20px;
+  text-align: center;
+  z-index: 20;
+  font-size: 16px;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.5);
+  line-height: 1.5;
+  min-height: 48px;
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#subtitles.show {
+  opacity: 1;
+}
+
+/* Progress bar */
+#progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4CAF50, #81C784);
+  width: 0%;
+  transition: width 0.1s linear;
+  z-index: 30;
+}
+
+/* Controls */
+#controls {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 40;
+  display: flex;
+  gap: 8px;
+}
+
+#controls button {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+#controls button:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* Countdown timer */
+#timer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 30;
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+  font-family: monospace;
+}
+
+.tag-chip {
+  display: inline-block;
+  padding: 6px 14px;
+  background: rgba(76, 175, 80, 0.3);
+  border: 1px solid rgba(76, 175, 80, 0.5);
+  border-radius: 20px;
+  font-size: 13px;
+  color: #fff;
+  margin: 3px;
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.pulse {
+  animation: pulse 2s ease infinite;
+}
+
+/* Logo watermark */
+.watermark {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 15;
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+}
+</style>
+</head>
+<body>
+
+<div id="player">
+  <div id="scene">
+    <!-- Scenes will be built by JS using canvas screenshots -->
+  </div>
+  <div id="subtitles"></div>
+  <div id="progress"></div>
+  <div id="controls">
+    <button id="btnPlay" onclick="togglePlay()">▶</button>
+  </div>
+  <div id="timer">00:00</div>
+  <div class="watermark">体质养生</div>
+</div>
+
+<script>
+// ===========================================
+// VIDEO DATA - All scenes with timing
+// ===========================================
+
+const IMG = {};
+// These will be loaded from inline data at bottom
+
+const VIDEO_DATA = [
+  // 0: Opening hook (5s)
+  { 
+    type: 'text', duration: 5,
+    elements: [
+      { type: 'main', text: '14亿中国人里', delay: 0 },
+      { type: 'main', text: '真正健康的不到5%', delay: 1.5, highlight: true },
+      { type: 'main', text: '剩下95%都在亚健康', delay: 3 },
+    ],
+    subtitle: '你是不是也有这种感觉——体检报告越来越长，身体却越来越虚。'
+  },
+  
+  // 1: Solution - App screenshot (5s)
+  { 
+    type: 'screenshot', duration: 5, imageKey: 'home',
+    overlay: [
+      { text: '体质养生·大健康', size: 24, weight: 700, delay: 0.5 },
+      { text: '先测体质，再配方案，最后买得到食材', size: 14, delay: 2 },
+    ],
+    subtitle: '我们花了快一年，做了一个真正懂你体质的养生APP。'
+  },
+
+  // 2: Constitution test (6s)
+  {
+    type: 'screenshot', duration: 6, imageKey: 'constitution',
+    overlay: [
+      { text: '1分钟做完测评', size: 22, weight: 700, delay: 0 },
+      { text: 'AI精准分析你的体质类型', size: 14, delay: 1.2 },
+      { text: '气虚 · 阳虚 · 阴虚 · 痰湿 · 湿热', size: 13, delay: 2.5, tag: true },
+      { text: '血瘀 · 气郁 · 特禀 · 平和', size: 13, delay: 3.5, tag: true },
+    ],
+    subtitle: '1分钟做几道题，AI就能精准分析你的体质类型——九种体质全覆盖。'
+  },
+
+  // 3: AI Assistant + Recipes (7s)
+  {
+    type: 'screenshot', duration: 7, imageKey: 'ai',
+    overlay: [
+      { text: 'AI健康助手', size: 22, weight: 700, delay: 0 },
+      { text: '6大智能功能', size: 14, delay: 1 },
+      { text: '体质分析 · 每日贴士 · 健康洞察', size: 13, delay: 2, tag: true },
+      { text: '养生问问 · 症状自查 · 7天挑战', size: 13, delay: 3.5, tag: true },
+    ],
+    subtitle: 'AI自动匹配适合你体质的食疗方案、运动建议和四季养生提醒。'
+  },
+
+  // 4: Recipes (5s)
+  {
+    type: 'screenshot', duration: 5, imageKey: 'recipes',
+    overlay: [
+      { text: '15道对症食疗方', size: 22, weight: 700, delay: 0 },
+      { text: '从早餐到晚餐，从汤羹到茶饮', size: 14, delay: 1.5 },
+    ],
+    subtitle: '气虚喝山药枸杞粥。湿气重喝薏米赤小豆汤。吃什么，听体质的。'
+  },
+
+  // 5: Solar Terms + Articles (5s)
+  {
+    type: 'screenshot', duration: 5, imageKey: 'solar',
+    overlay: [
+      { text: '24节气养生提醒', size: 22, weight: 700, delay: 0 },
+      { text: '春分疏肝 · 夏至养心 · 秋分润肺 · 冬至补肾', size: 13, delay: 1.5, tag: true },
+    ],
+    subtitle: '24节气到了主动推送提醒。从吃到动，APP全安排好了。'
+  },
+
+  // 6: Diary + Trends (5s)
+  {
+    type: 'screenshot', duration: 5, imageKey: 'diary',
+    overlay: [
+      { text: '每天1分钟', size: 22, weight: 700, delay: 0 },
+      { text: '记下睡眠 · 运动 · 饮食 · 心情', size: 14, delay: 1.5 },
+      { text: '7天后看到自己的健康变化趋势', size: 14, delay: 3, highlight: true },
+    ],
+    subtitle: '每天花1分钟记日记，一周后就能看到自己的健康趋势。'
+  },
+
+  // 7: Shop (5s)
+  {
+    type: 'screenshot', duration: 5, imageKey: 'shop',
+    overlay: [
+      { text: '一键购齐所需食材', size: 22, weight: 700, delay: 0 },
+      { text: '体质食谱推荐的食材，商城全都有', size: 14, delay: 1.5 },
+    ],
+    subtitle: '测完体质拿到食谱，所有食材一键下单送到家。'
+  },
+
+  // 8: Profile + Project status (6s)
+  {
+    type: 'screenshot', duration: 6, imageKey: 'profile',
+    overlay: [
+      { text: '项目已完成', size: 22, weight: 700, delay: 0 },
+      { text: '20+API接口 · 28项测试通过 · 阿里云部署', size: 13, delay: 1.5, tag: true },
+    ],
+    subtitle: '从PRD到代码到上线到云服务器——我们实打实地做完了。'
+  },
+
+  // 9: Investment pitch (6s)
+  {
+    type: 'text', duration: 6,
+    elements: [
+      { type: 'main', text: '寻找原始股东', delay: 0 },
+      { type: 'sub', text: '1万元起投', delay: 1.5 },
+      { type: 'sub', text: '签协议 · 拿股份 · 享分红', delay: 3 },
+    ],
+    subtitle: '现在我们在找同样看好大健康赛道的你。成为原始股东，一起做这件有意义的事。'
+  },
+
+  // 10: CTA (4s)
+  {
+    type: 'text', duration: 4,
+    elements: [
+      { type: 'main', text: '私信了解详情', delay: 0.5, highlight: true },
+      { type: 'sub', text: '发你完整商业计划书+产品演示', delay: 2 },
+    ],
+    subtitle: '私信我，发你完整商业计划书和产品演示。'
+  }
+];
+
+// ===========================================
+// VIDEO PLAYER ENGINE
+// ===========================================
+
+let currentScene = 0;
+let sceneStartTime = 0;
+let isPlaying = false;
+let animFrameId = null;
+let videoStartTime = 0;
+let totalElapsed = 0;
+
+const sceneEl = document.getElementById('scene');
+const subEl = document.getElementById('subtitles');
+const progressEl = document.getElementById('progress');
+const timerEl = document.getElementById('timer');
+const btnPlay = document.getElementById('btnPlay');
+
+function getTotalDuration() {
+  return VIDEO_DATA.reduce((sum, s) => sum + s.duration, 0);
+}
+
+function buildScene(sceneData) {
+  sceneEl.innerHTML = '';
+  
+  if (sceneData.type === 'text') {
+    // Black screen with text
+    const div = document.createElement('div');
+    div.className = 'black-screen active';
+    div.style.background = sceneData.bg || '#0a0a0a';
+    
+    sceneData.elements.forEach((el, i) => {
+      const p = document.createElement('p');
+      if (i === 0) {
+        const h = document.createElement('h1');
+        h.textContent = el.text;
+        if (el.highlight) h.style.color = '#4CAF50';
+        h.style.animationDelay = el.delay + 's';
+        h.style.opacity = '0';
+        h.style.animation = 'fadeInUp 0.6s ease ' + el.delay + 's forwards';
+        div.appendChild(h);
+        return;
+      }
+      p.textContent = el.text;
+      if (el.highlight) p.style.color = '#4CAF50';
+      p.style.fontSize = el.type === 'main' ? '28px' : '18px';
+      p.style.fontWeight = el.type === 'main' ? '700' : '400';
+      p.style.animationDelay = el.delay + 's';
+      p.style.opacity = '0';
+      p.style.animation = 'fadeInUp 0.5s ease ' + el.delay + 's forwards';
+      div.appendChild(p);
+    });
+    
+    sceneEl.appendChild(div);
+    
+  } else if (sceneData.type === 'screenshot' && IMG[sceneData.imageKey]) {
+    // Screenshot with overlays
+    const img = document.createElement('img');
+    img.src = IMG[sceneData.imageKey];
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'contain';
+    img.style.background = '#000';
+    sceneEl.appendChild(img);
+    
+    // Overlay text at bottom
+    if (sceneData.overlay) {
+      const container = document.createElement('div');
+      container.style.cssText = 'position:absolute;bottom:60px;left:0;right:0;padding:16px 20px;text-align:center;z-index:10;';
+      
+      sceneData.overlay.forEach(o => {
+        const el = document.createElement('div');
+        el.textContent = o.text;
+        el.style.cssText = 'color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.9);margin:4px 0;font-size:' + o.size + 'px;font-weight:' + (o.weight || 400) + ';opacity:0;animation:fadeInUp 0.4s ease ' + o.delay + 's forwards;';
+        if (o.highlight) el.style.color = '#4CAF50';
+        if (o.tag) {
+          el.style.display = 'inline-block';
+          el.style.background = 'rgba(76,175,80,0.25)';
+          el.style.borderRadius = '16px';
+          el.style.padding = '4px 12px';
+          el.style.fontSize = o.size + 'px';
+          el.style.margin = '3px';
+        }
+        container.appendChild(el);
+      });
+      
+      sceneEl.appendChild(container);
+    }
+  } else {
+    // Fallback
+    const div = document.createElement('div');
+    div.className = 'black-screen active';
+    div.innerHTML = '<h1 style="color:#4CAF50;">体质养生·大健康</h1><p style="margin-top:12px;">APP 宣传视频</p>';
+    sceneEl.appendChild(div);
+  }
+}
+
+function updateScene(index) {
+  currentScene = Math.max(0, Math.min(index, VIDEO_DATA.length - 1));
+  sceneStartTime = performance.now();
+  
+  const sd = VIDEO_DATA[currentScene];
+  buildScene(sd);
+  
+  // Show subtitle with fade
+  if (sd.subtitle) {
+    subEl.textContent = sd.subtitle;
+    subEl.classList.add('show');
+    subEl.style.transition = 'opacity 0.3s';
+  }
+}
+
+function getSceneStartTime(sceneIndex) {
+  let t = 0;
+  for (let i = 0; i < sceneIndex; i++) {
+    t += VIDEO_DATA[i].duration;
+  }
+  return t;
+}
+
+function updateTimer() {
+  const t = totalElapsed;
+  const mins = Math.floor(t / 60);
+  const secs = Math.floor(t % 60);
+  timerEl.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+  
+  const total = getTotalDuration();
+  progressEl.style.width = Math.min(100, (t / total) * 100) + '%';
+}
+
+function play() {
+  if (isPlaying) return;
+  isPlaying = true;
+  btnPlay.textContent = '⏸';
+  videoStartTime = performance.now() - totalElapsed * 1000;
+  
+  // Hide subtitle initially
+  subEl.classList.remove('show');
+  
+  updateScene(currentScene);
+  
+  function tick() {
+    if (!isPlaying) return;
+    
+    const now = performance.now();
+    totalElapsed = (now - videoStartTime) / 1000;
+    
+    // Check if we need to move to next scene
+    const sceneStart = getSceneStartTime(currentScene);
+    const sceneEnd = sceneStart + VIDEO_DATA[currentScene].duration;
+    
+    if (totalElapsed >= sceneEnd && currentScene < VIDEO_DATA.length - 1) {
+      updateScene(currentScene + 1);
+    } else if (totalElapsed >= sceneEnd) {
+      // End of video
+      isPlaying = false;
+      btnPlay.textContent = '▶';
+      // Show replay button
+    }
+    
+    updateTimer();
+    animFrameId = requestAnimationFrame(tick);
+  }
+  
+  animFrameId = requestAnimationFrame(tick);
+}
+
+function pause() {
+  if (!isPlaying) return;
+  isPlaying = false;
+  btnPlay.textContent = '▶';
+  if (animFrameId) {
+    cancelAnimationFrame(animFrameId);
+    animFrameId = null;
+  }
+  subEl.classList.remove('show');
+}
+
+function togglePlay() {
+  if (isPlaying) {
+    pause();
+  } else {
+    // If ended, restart
+    if (totalElapsed >= getTotalDuration()) {
+      totalElapsed = 0;
+      currentScene = 0;
+    }
+    play();
+  }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowLeft') { pause(); totalElapsed = Math.max(0, totalElapsed - 3); currentScene = 0; for(let i=0;i<VIDEO_DATA.length;i++){if(totalElapsed<getSceneStartTime(i+1)){currentScene=i;break;}} updateScene(currentScene); updateTimer(); }
+  if (e.code === 'ArrowRight') { pause(); totalElapsed = Math.min(getTotalDuration(), totalElapsed + 3); currentScene = 0; for(let i=0;i<VIDEO_DATA.length;i++){if(totalElapsed<getSceneStartTime(i+1)){currentScene=i;break;}} updateScene(currentScene); updateTimer(); }
+});
+
+// ===========================================
+// IMAGE DATA - Embed screenshots as base64
+// These are placeholders - replace with actual screenshots
+// ===========================================
+
+// Images are loaded from the server
+function init() {
+  // Images will be loaded from the local server URLs
+  IMG.home = '/';
+  // Set up initial scene
+  buildScene(VIDEO_DATA[0]);
+  updateTimer();
+}
+
+// Override - use actual screenshot URLs when server is running
+// For now, just show the text-based version
+init();
+
+console.log('Video player ready. Total duration:', getTotalDuration() + 's');
+console.log('Press Space to play/pause.');
+</script>
+</body>
+</html>

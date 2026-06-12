@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: wellness-app
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: WELLNESS_SECRET
+        generateValue: true
+    healthCheckPath: /
+    numInstances: 1

@@ -1,0 +1,2 @@
+﻿@echo off
+"D:\deepclaw\node-win-x64\node_modules\cloudflared\bin\cloudflared.exe" tunnel run wellness-app --credentials-contents "{\"AccountTag\":\"60da2e5c5a14226a5624319e2106c26a\",\"TunnelID\":\"eab02331-0011-48ce-b503-6c47c83e2803\",\"TunnelName\":\"wellness-app\",\"TunnelSecret\":\"TnUePe/6mV8yIuiMwfxWnZEzuakIV+I1LMDWhibtlVaHaL3z3xuP/ShDp8Bm2dKSmSJEj/QLTs8aMb3Z3V20zg==\"}" --loglevel info >> "D:\deepclaw\projects\wellness_app\cf6.log" 2>&1

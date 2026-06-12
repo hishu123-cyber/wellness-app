@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2D4A37">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="食术养生 - AI智能辨体识别，个性化食疗养生平台">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/styles.css?v=134257280401692451">
+  <title>食术养生 - AI辨体·食疗·茶养</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #F7F3EE; padding-bottom: 60px; }
+    .app-shell { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 20px; text-align: center; }
+    .app-shell .logo { font-size: 56px; margin-bottom: 16px; }
+    .app-shell h1 { font-size: 24px; color: #2D4A37; margin: 0 0 8px; font-weight: 700; }
+    .app-shell p { font-size: 14px; color: #6D5D4B; margin: 0 0 24px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid #E8F0E5; border-top-color: #4A7C59; border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* 底部导航 */
+    .bottom-tab { position: fixed; bottom: 0; left: 0; right: 0; height: 56px; background: #fff; border-top: 1px solid #E5DDD3; display: flex; align-items: center; justify-content: space-around; z-index: 999; box-shadow: 0 -2px 12px rgba(60,36,21,0.08); }
+    .tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; height: 100%; color: #9B8B7A; font-size: 11px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: color .2s; }
+    .tab-item i { font-size: 20px; margin-bottom: 2px; }
+    .tab-item.active { color: #4A7C59; }
+    .tab-item:active { opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div class="app-container" id="app">
+    <div class="app-shell">
+      <div class="logo">🌿</div>
+      <h1>食术养生</h1>
+      <p>加载中...</p>
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <!-- 底部导航 -->
+  <div class="bottom-tab" id="bottom-tab">
+    <div class="tab-item active" data-page="home" onclick="navigate('home')">
+      <i class="fa-solid fa-house"></i>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" data-page="recipes" onclick="navigate('recipes')">
+      <i class="fa-solid fa-utensils"></i>
+      <span>食谱</span>
+    </div>
+    <div class="tab-item" data-page="tea" onclick="navigate('tea')">
+      <i class="fa-solid fa-mug-hot"></i>
+      <span>茶养</span>
+    </div>
+    <div class="tab-item" data-page="shop" onclick="navigate('shop')">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span>商城</span>
+    </div>
+    <div class="tab-item" data-page="profile" onclick="navigate('profile')">
+      <i class="fa-solid fa-user"></i>
+      <span>我的</span>
+    </div>
+  </div>
+  <script src="/app.js?v=134257280401692451"></script>
+  <script>
+    // 初始化应用 - 等待 app.js 加载完成后执行
+    function initApp() {
+      console.log('[initApp] starting...');
+      if (typeof initTheme === 'function') initTheme();
+      if (typeof updateTabBar === 'function') updateTabBar();
+      if (typeof render === 'function') {
+        state.page = 'home';
+        render();
+      } else {
+        console.error('[initApp] render() not found');
+      }
+    }
+
+    // Service Worker 注册
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw2.js?v=134257280401692451').catch(function(){});
+      });
+    }
+
+    // 定时更新底部导航激活状态
+    setInterval(function() {
+      if (typeof updateTabBar === 'function') updateTabBar();
+    }, 800);
+
+    // DOM 加载完成后初始化（此时 app.js 应已加载）
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      // DOM 已经就绪
+      initApp();
+    }
+  </script>
+</body>
+</html>

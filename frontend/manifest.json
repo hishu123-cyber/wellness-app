@@ -1,0 +1,50 @@
+{
+  "name": "食术·中医体质养生",
+  "short_name": "食术养生",
+  "description": "AI中医体质辨识，个性化健康管理平台",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1B3A2D",
+  "theme_color": "#1B3A2D",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["health", "lifestyle", "medical"],
+  "lang": "zh-CN",
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "体质测评",
+      "short_name": "测评",
+      "description": "快速体质测评",
+      "url": "/app?page=constitution&utm_source=pwa",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "健康日记",
+      "short_name": "日记",
+      "description": "记录每日健康",
+      "url": "/app?page=diary&utm_source=pwa",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

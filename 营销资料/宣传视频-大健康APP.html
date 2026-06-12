@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>体质养生·大健康 - 宣传视频</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+#player {
+  width: 360px;
+  height: 640px;
+  background: #000;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(76,175,80,0.1);
+}
+
+#video-container {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 50px);
+  overflow: hidden;
+}
+
+/* Timeline progress */
+#timeline {
+  position: absolute;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  z-index: 100;
+}
+
+#timeline-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4CAF50, #81C784);
+  transition: width 0.1s linear;
+}
+
+/* Controls */
+#controls {
+  height: 50px;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+#controls button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+#controls button:hover { background: rgba(255,255,255,0.1); }
+
+#time-display {
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  font-family: monospace;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Scenes */
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+
+.scene.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.text-scene {
+  padding: 30px;
+}
+
+.text-list {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.line {
+  margin: 6px 0;
+  line-height: 1.5;
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+.fade-in {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tag {
+  display: inline-block;
+  padding: 6px 16px;
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 20px;
+  font-size: 14px;
+  color: #4CAF50;
+  margin: 4px;
+}
+
+/* Screenshot scene */
+.screenshot-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.screenshot-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.screenshot-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 50%, rgba(0,0,0,0.6));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 20px;
+  padding-bottom: 50px;
+}
+
+.overlay-text {
+  opacity: 0;
+  transform: translateY(15px);
+  text-align: center;
+  margin: 3px 0;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+/* Subtitles */
+#subtitles {
+  position: absolute;
+  bottom: 55px;
+  left: 16px;
+  right: 16px;
+  text-align: center;
+  z-index: 90;
+  font-size: 14px;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+  line-height: 1.5;
+  padding: 10px 14px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#subtitles.show { opacity: 1; }
+
+/* Skip overlay for initial text-only scenes */
+@media (max-width: 480px) {
+  #player { width: 100%; height: 100vh; border-radius: 0; }
+}
+
+
+
+        .scene-1 .overlay-0 { animation-delay: 0.3s; }
+      
+        .scene-1 .overlay-1 { animation-delay: 1.5s; }
+      
+
+        .scene-2 .overlay-0 { animation-delay: 0.3s; }
+      
+        .scene-2 .overlay-1 { animation-delay: 1s; }
+      
+        .scene-2 .overlay-2 { animation-delay: 2.5s; }
+      
+
+        .scene-3 .overlay-0 { animation-delay: 0.3s; }
+      
+        .scene-3 .overlay-1 { animation-delay: 1.5s; }
+      
+        .scene-3 .overlay-2 { animation-delay: 3s; }
+      
+        .scene-3 .overlay-3 { animation-delay: 4.5s; }
+      
+        .scene-3 .overlay-4 { animation-delay: 6s; }
+      
+
+        .scene-4 .overlay-0 { animation-delay: 0.3s; }
+      
+        .scene-4 .overlay-1 { animation-delay: 1.5s; }
+      
+
+        .scene-5 .overlay-0 { animation-delay: 0.3s; }
+      
+        .scene-5 .overlay-1 { animation-delay: 1.5s; }
+      
+
+        .scene-6 .overlay-0 { animation-delay: 0.3s; }
+      
+        .scene-6 .overlay-1 { animation-delay: 1.5s; }
+      
+        .scene-6 .overlay-2 { animation-delay: 3s; }
+      
+
+        .scene-7 .overlay-0 { animation-delay: 0.3s; }
+      
+        .scene-7 .overlay-1 { animation-delay: 1.5s; }
+      
+
+        .scene-8 .overlay-0 { animation-delay: 0.3s; }
+      
+        .scene-8 .overlay-1 { animation-delay: 1.5s; }
+      
+        .scene-8 .overlay-2 { animation-delay: 3s; }
+      
+
+
+</style>
+</head>
+<body>
+
+<div id="player">
+  <div id="video-container">
+    <div class="scene scene-0" data-index="0">
+      <div class="scene text-scene" style="background:#0a0a0a;">
+        <div class="text-list">
+          <p class="line fade-in" style="animation-delay:0.2s;font-size:20px;color:#888;">14亿中国人里</p>
+          <p class="line fade-in" style="animation-delay:1.5s;font-size:26px;color:#ff6b6b;">真正健康的<br><span style="font-size:48px;font-weight:800;">不到5%</span></p>
+          <p class="line fade-in" style="animation-delay:3s;font-size:18px;color:#aaa;">剩下95%都处于亚健康</p>
+          <p class="line fade-in" style="animation-delay:4s;font-size:14px;color:#666;margin-top:30px;">—— 你不孤单</p>
+        </div>
+      </div>
+    </div>
+    <div class="scene scene-1" data-index="1">
+      <div class="screenshot-wrap" style="background:#0d0d1a;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;">
+          <div style="color:rgba(255,255,255,0.15);font-size:16px;">
+            <div style="font-size:48px;margin-bottom:8px;">📱</div>
+            <div>HOME</div>
+            <div style="font-size:12px;margin-top:4px;">(截图嵌入后替换此占位)</div>
+          </div>
+        </div>
+        <div class="screenshot-overlay">
+          <div class="overlay-text overlay-0" style="font-size:22px;font-weight:700;color:#4CAF50;animation-delay:0.3s;">体质养生·大健康</div>
+        <div class="overlay-text overlay-1" style="font-size:14px;font-weight:400;color:#ccc;animation-delay:1.5s;">先测体质 → 再配方案 → 买得到食材</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene scene-2" data-index="2">
+      <div class="screenshot-wrap" style="background:#0d0d1a;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;">
+          <div style="color:rgba(255,255,255,0.15);font-size:16px;">
+            <div style="font-size:48px;margin-bottom:8px;">📱</div>
+            <div>CONSTITUTION</div>
+            <div style="font-size:12px;margin-top:4px;">(截图嵌入后替换此占位)</div>
+          </div>
+        </div>
+        <div class="screenshot-overlay">
+          <div class="overlay-text overlay-0" style="font-size:32px;font-weight:800;color:#4CAF50;animation-delay:0.3s;">1分钟</div>
+        <div class="overlay-text overlay-1" style="font-size:16px;font-weight:400;color:#fff;animation-delay:1s;">完成体质测评</div>
+        <div class="overlay-text overlay-2" style="font-size:12px;font-weight:400;color:#4CAF50;animation-delay:2.5s;">气虚 · 阳虚 · 阴虚 · 痰湿 · 湿热 · 血瘀 · 气郁 · 特禀 · 平和</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene scene-3" data-index="3">
+      <div class="screenshot-wrap" style="background:#0d0d1a;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;">
+          <div style="color:rgba(255,255,255,0.15);font-size:16px;">
+            <div style="font-size:48px;margin-bottom:8px;">📱</div>
+            <div>AI</div>
+            <div style="font-size:12px;margin-top:4px;">(截图嵌入后替换此占位)</div>
+          </div>
+        </div>
+        <div class="screenshot-overlay">
+          <div class="overlay-text overlay-0" style="font-size:22px;font-weight:700;color:#4CAF50;animation-delay:0.3s;">AI健康助手</div>
+        <div class="overlay-text overlay-1" style="font-size:13px;font-weight:400;color:#999;animation-delay:1.5s;">体质分析 · 每日贴士 · 健康洞察</div>
+        <div class="overlay-text overlay-2" style="font-size:13px;font-weight:400;color:#999;animation-delay:3s;">养生问问 · 症状自查 · 7天挑战</div>
+        <div class="overlay-text overlay-3" style="font-size:14px;font-weight:400;color:#fff;animation-delay:4.5s;">168种体质食谱组合</div>
+        <div class="overlay-text overlay-4" style="font-size:12px;font-weight:400;color:#4CAF50;animation-delay:6s;">支持DeepSeek / OpenAI 大模型</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene scene-4" data-index="4">
+      <div class="screenshot-wrap" style="background:#0d0d1a;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;">
+          <div style="color:rgba(255,255,255,0.15);font-size:16px;">
+            <div style="font-size:48px;margin-bottom:8px;">📱</div>
+            <div>RECIPES</div>
+            <div style="font-size:12px;margin-top:4px;">(截图嵌入后替换此占位)</div>
+          </div>
+        </div>
+        <div class="screenshot-overlay">
+          <div class="overlay-text overlay-0" style="font-size:22px;font-weight:700;color:#4CAF50;animation-delay:0.3s;">15道对症食疗方</div>
+        <div class="overlay-text overlay-1" style="font-size:14px;font-weight:400;color:#ccc;animation-delay:1.5s;">从汤羹到茶饮，从早餐到晚餐</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene scene-5" data-index="5">
+      <div class="screenshot-wrap" style="background:#0d0d1a;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;">
+          <div style="color:rgba(255,255,255,0.15);font-size:16px;">
+            <div style="font-size:48px;margin-bottom:8px;">📱</div>
+            <div>SOLAR</div>
+            <div style="font-size:12px;margin-top:4px;">(截图嵌入后替换此占位)</div>
+          </div>
+        </div>
+        <div class="screenshot-overlay">
+          <div class="overlay-text overlay-0" style="font-size:22px;font-weight:700;color:#FF9800;animation-delay:0.3s;">24节气养生</div>
+        <div class="overlay-text overlay-1" style="font-size:14px;font-weight:400;color:#ccc;animation-delay:1.5s;">饮食·运动·穴位  全周期管理</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene scene-6" data-index="6">
+      <div class="screenshot-wrap" style="background:#0d0d1a;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;">
+          <div style="color:rgba(255,255,255,0.15);font-size:16px;">
+            <div style="font-size:48px;margin-bottom:8px;">📱</div>
+            <div>DIARY</div>
+            <div style="font-size:12px;margin-top:4px;">(截图嵌入后替换此占位)</div>
+          </div>
+        </div>
+        <div class="screenshot-overlay">
+          <div class="overlay-text overlay-0" style="font-size:22px;font-weight:700;color:#4CAF50;animation-delay:0.3s;">每天1分钟</div>
+        <div class="overlay-text overlay-1" style="font-size:14px;font-weight:400;color:#ccc;animation-delay:1.5s;">记下睡眠·运动·饮食·心情</div>
+        <div class="overlay-text overlay-2" style="font-size:16px;font-weight:400;color:#fff;animation-delay:3s;">7天趋势图，看得见的改变</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene scene-7" data-index="7">
+      <div class="screenshot-wrap" style="background:#0d0d1a;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;">
+          <div style="color:rgba(255,255,255,0.15);font-size:16px;">
+            <div style="font-size:48px;margin-bottom:8px;">📱</div>
+            <div>SHOP</div>
+            <div style="font-size:12px;margin-top:4px;">(截图嵌入后替换此占位)</div>
+          </div>
+        </div>
+        <div class="screenshot-overlay">
+          <div class="overlay-text overlay-0" style="font-size:22px;font-weight:700;color:#FF9800;animation-delay:0.3s;">一键购齐</div>
+        <div class="overlay-text overlay-1" style="font-size:14px;font-weight:400;color:#ccc;animation-delay:1.5s;">体质食谱推荐的食材，商城全都有</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene scene-8" data-index="8">
+      <div class="screenshot-wrap" style="background:#0d0d1a;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;">
+          <div style="color:rgba(255,255,255,0.15);font-size:16px;">
+            <div style="font-size:48px;margin-bottom:8px;">📱</div>
+            <div>PROFILE</div>
+            <div style="font-size:12px;margin-top:4px;">(截图嵌入后替换此占位)</div>
+          </div>
+        </div>
+        <div class="screenshot-overlay">
+          <div class="overlay-text overlay-0" style="font-size:22px;font-weight:700;color:#4CAF50;animation-delay:0.3s;">产品已上线</div>
+        <div class="overlay-text overlay-1" style="font-size:13px;font-weight:400;color:#aaa;animation-delay:1.5s;">20+ API接口 · 28项测试通过</div>
+        <div class="overlay-text overlay-2" style="font-size:13px;font-weight:400;color:#4CAF50;animation-delay:3s;">Docker部署 · 阿里云ECS · 直接可用</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene scene-9" data-index="9">
+      <div class="scene text-scene" style="background:linear-gradient(135deg,#0a0a0a,#1a3a1a);">
+        <div class="text-list">
+          <p class="line fade-in" style="animation-delay:0.5s;font-size:28px;font-weight:700;color:#4CAF50;">寻找原始股东</p>
+          <div class="line fade-in" style="animation-delay:2s;margin-top:20px;">
+            <span class="tag">1万元起投</span>
+          </div>
+          <div class="line fade-in" style="animation-delay:3.5s;margin-top:10px;">
+            <span class="tag">签协议</span>
+            <span class="tag">拿股份</span>
+            <span class="tag">享分红</span>
+          </div>
+          <p class="line fade-in" style="animation-delay:5s;margin-top:30px;font-size:13px;color:#666;">已有产品 · 不限用途增长 · 10席限定</p>
+        </div>
+      </div>
+    </div>
+    <div class="scene scene-10" data-index="10">
+      <div class="scene text-scene" style="background:#0a0a0a;">
+        <div class="text-list">
+          <p class="line fade-in" style="animation-delay:0.5s;font-size:16px;color:#888;">私信了解详情</p>
+          <p class="line fade-in" style="animation-delay:1.8s;font-size:24px;font-weight:700;color:#4CAF50;">体质养生·大健康</p>
+          <p class="line fade-in" style="animation-delay:3s;font-size:14px;color:#666;">发你完整商业计划书+产品演示</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="subtitles"></div>
+  <div id="timeline"><div id="timeline-bar"></div></div>
+  <div id="controls">
+    <button id="btnPrev" onclick="prevScene()">⏮</button>
+    <button id="btnPlay" onclick="togglePlay()" style="font-size:24px;">▶</button>
+    <button id="btnNext" onclick="nextScene()">⏭</button>
+    <span id="time-display">00:00 / 01:01</span>
+  </div>
+</div>
+
+<script>
+const SCENES = [{"duration":5,"subtitle":"你是不是也有这种感觉——体检报告越来越长，身体却越来越虚。"},{"duration":5,"subtitle":"花了大半年，我们做了一个真正懂你体质的养生APP。"},{"duration":6,"subtitle":"1分钟做几道题，AI精准分析你的体质类型——九种体质全覆盖。"},{"duration":8,"subtitle":"AI健康助手——体质分析、一周食谱、7天挑战、症状自查，全自动匹配。"},{"duration":5,"subtitle":"气虚喝山药枸杞粥，湿气重喝薏米赤小豆汤——吃什么，问体质。"},{"duration":5,"subtitle":"24节气到了主动推送提醒，春分疏肝、夏至养心、秋分润肺、冬至补肾。"},{"duration":5,"subtitle":"每天1分钟记健康日记，7天后看到自己的健康变化趋势。"},{"duration":5,"subtitle":"测完体质拿到食谱，所有食材一键下单送到家。"},{"duration":6,"subtitle":"从PRD到代码到上线到云服务器——我们实打实地做到了。"},{"duration":6,"subtitle":"现在寻找原始股东，一起做这件有意义也有价值的事。"},{"duration":5,"subtitle":"私信我，发你完整商业计划书和产品演示。"}];
+const TOTAL = 61;
+
+let currentScene = 0;
+let sceneElapsed = 0;
+let totalElapsed = 0;
+let isPlaying = false;
+let animId = null;
+let videoStart = 0;
+
+const container = document.getElementById('video-container');
+const scenes = container.querySelectorAll('.scene');
+const subEl = document.getElementById('subtitles');
+const barEl = document.getElementById('timeline-bar');
+const timeEl = document.getElementById('time-display');
+const btnPlay = document.getElementById('btnPlay');
+
+function getSceneStart(idx) {
+  let t = 0;
+  for (let i = 0; i < idx; i++) t += SCENES[i].duration;
+  return t;
+}
+
+function activateScene(idx) {
+  scenes.forEach((s, i) => s.classList.toggle('active', i === idx));
+  currentScene = idx;
+  
+  if (SCENES[idx].subtitle) {
+    subEl.textContent = SCENES[idx].subtitle;
+    subEl.classList.add('show');
+    // Auto-hide subtitle at end of scene
+    setTimeout(() => subEl.classList.remove('show'), (SCENES[idx].duration - 0.5) * 1000);
+  } else {
+    subEl.classList.remove('show');
+  }
+}
+
+function updateTimer() {
+  const t = totalElapsed;
+  const tot = TOTAL;
+  const m = Math.floor(t / 60);
+  const s = Math.floor(t % 60);
+  const tm = Math.floor(tot / 60);
+  const ts = Math.floor(tot % 60);
+  timeEl.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0') + ' / ' + String(tm).padStart(2,'0') + ':' + String(ts).padStart(2,'0');
+  barEl.style.width = Math.min(100, (t / tot) * 100) + '%';
+}
+
+function play() {
+  if (isPlaying) return;
+  isPlaying = true;
+  btnPlay.textContent = '⏸';
+  videoStart = performance.now() - totalElapsed * 1000;
+  
+  // Activate first scene if needed
+  if (!scenes[currentScene].classList.contains('active')) {
+    activateScene(currentScene);
+  }
+  
+  function tick() {
+    if (!isPlaying) return;
+    const now = performance.now();
+    totalElapsed = (now - videoStart) / 1000;
+    
+    if (totalElapsed >= TOTAL) {
+      isPlaying = false;
+      btnPlay.textContent = '▶';
+      subEl.classList.remove('show');
+      updateTimer();
+      return;
+    }
+    
+    // Find current scene
+    let newScene = 0;
+    let accum = 0;
+    for (let i = 0; i < SCENES.length; i++) {
+      if (totalElapsed >= accum && totalElapsed < accum + SCENES[i].duration) {
+        newScene = i;
+        break;
+      }
+      accum += SCENES[i].duration;
+    }
+    
+    if (newScene !== currentScene) {
+      activateScene(newScene);
+    }
+    
+    // Update subtitle visibility
+    const sceneData = SCENES[currentScene];
+    if (sceneData.subtitle) {
+      const sceneStart = getSceneStart(currentScene);
+      const sceneEnd = sceneStart + sceneData.duration;
+      const relTime = totalElapsed - sceneStart;
+      if (relTime < 0.5) {
+        subEl.classList.remove('show');
+      } else if (relTime > sceneData.duration - 0.5) {
+        subEl.classList.remove('show');
+      }
+    }
+    
+    updateTimer();
+    animId = requestAnimationFrame(tick);
+  }
+  
+  animId = requestAnimationFrame(tick);
+}
+
+function pause() {
+  if (!isPlaying) return;
+  isPlaying = false;
+  btnPlay.textContent = '▶';
+  if (animId) { cancelAnimationFrame(animId); animId = null; }
+  subEl.classList.remove('show');
+}
+
+function togglePlay() {
+  if (isPlaying) { pause(); }
+  else {
+    if (totalElapsed >= TOTAL) { totalElapsed = 0; currentScene = 0; activateScene(0); updateTimer(); }
+    play();
+  }
+}
+
+function prevScene() {
+  pause();
+  currentScene = Math.max(0, currentScene - 1);
+  totalElapsed = getSceneStart(currentScene);
+  activateScene(currentScene);
+  updateTimer();
+}
+
+function nextScene() {
+  pause();
+  currentScene = Math.min(SCENES.length - 1, currentScene + 1);
+  totalElapsed = getSceneStart(currentScene);
+  activateScene(currentScene);
+  updateTimer();
+}
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowLeft') prevScene();
+  if (e.code === 'ArrowRight') nextScene();
+});
+
+// Init
+activateScene(0);
+updateTimer();
+console.log('Video player ready. Total: ' + TOTAL + 's, ' + SCENES.length + ' scenes.');
+console.log('Press SPACE to play. Arrow keys to navigate.');
+</script>
+</body>
+</html>
