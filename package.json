@@ -1,22 +1,26 @@
 {
   "name": "wellness_app",
   "version": "1.0.0",
-  "description": "",
+  "description": "食术养生 - 中医体质养生应用",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "vercel-build": "echo 'Build complete'"
   },
-  "keywords": [],
+  "keywords": ["wellness", "tcm", "constitution", "health"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
+    "@libsql/client": "^0.14.0",
     "axios": "^1.16.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "localtunnel": "^2.0.2",
-    "sql.js": "^1.14.1",
-    "ssh2": "^1.17.0"
+    "sql.js": "^1.14.1"
   }
 }
