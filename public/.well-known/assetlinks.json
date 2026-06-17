@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "xn__fiqs8s.shishu.twa",
+        "sha256_cert_fingerprints": ["3E:3A:53:F9:4D:E7:F5:5B:F3:7B:77:D2:1D:55:81:9D:88:C1:75:3E:85:5B:07:AE:A3:D7:97:34:0E:5B:98:76"]
+      }
+    }]

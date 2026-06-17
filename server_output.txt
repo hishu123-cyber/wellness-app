@@ -1,0 +1,18 @@
+2026-06-17T06:59:31.180Z [INFO] AI服务：规则引擎模式（未配置API密钥）
+TeaService: setting up routes...
+2026-06-17T06:59:31.201Z [INFO] 数据库已加载
+2026-06-17T06:59:31.204Z [INFO] 数据库已备份 {"path":"C:\\Users\\程云\\.qclaw\\workspace\\食术养生项目源码包\\backend\\data\\backups\\wellness_20260617_1459.db","size":208896}
+2026-06-17T06:59:31.210Z [INFO] 删除旧备份 {"file":"wellness_20260612_1854.db"}
+2026-06-17T06:59:31.211Z [INFO] 定时备份已启动（每6小时）
+TCM Service: 在线中医问诊模块已加载
+2026-06-17T06:59:31.216Z [INFO] 中医问诊模块已加载
+Nutritionist Service: 营养师上门服务模块已加载
+2026-06-17T06:59:31.221Z [INFO] 营养师上门服务模块已加载
+Provider Onboarding Service: 服务商入驻审核模块已加载
+2026-06-17T06:59:31.227Z [INFO] 服务商入驻审核模块已加载
+2026-06-17T06:59:31.234Z [INFO] AI智能辨体引擎已加载
+2026-06-17T06:59:31.240Z [INFO] 用户画像与智能推荐引擎已加载
+2026-06-17T06:59:31.247Z [INFO] 节气日历+任务打卡服务已加载
+2026-06-17T06:59:31.275Z [INFO] 服务已启动 {"port":8000,"url":"http://0.0.0.0:8000","backupDir":"C:\\Users\\程云\\.qclaw\\workspace\\食术养生项目源码包\\backend\\data\\backups"}
+
+C:\Users\程云\.qclaw\workspace\食术养生项目源码包>

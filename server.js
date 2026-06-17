@@ -123,9 +123,9 @@ app.get('/.well-known/assetlinks.json', function(req, res) {
       relation: ['delegate_permission/common.handle_all_urls'],
       target: {
         namespace: 'android_app',
-        package_name: 'com.shishu.wellness',
+        package_name: 'xn__fiqs8s.shishu.twa',
         sha256_cert_fingerprints: [
-          '14:6D:E9:83:C5:95:18:54:1A:4B:43:90:7E:5B:5A:31:0B:5E:A0:AB:0B:93:4D:7B:2E:80:21:56:9C:93:82:6D'
+          '3E:3A:53:F9:4D:E7:F5:5B:F3:7B:77:D2:1D:55:81:9D:88:C1:75:3E:85:5B:07:AE:A3:D7:97:34:0E:5B:98:76'
         ]
       }
     }
@@ -135,13 +135,7 @@ app.get('/.well-known/assetlinks.json', function(req, res) {
 app.use(express.static(path.join(__dirname, 'frontend'), {
   maxAge: 0,
   setHeaders: function(res, fp) {
-    if (fp.endsWith('.css') || fp.endsWith('.js')) {
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    } else if (fp.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    } else {
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    }
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   }
 }));
 
@@ -462,6 +456,18 @@ app.get('/api/articles', function(req, res) {
   params.push(size, (page - 1) * size);
   var items = queryAll('SELECT id, title, summary, category, tags, author, cover_image, view_count, created_at FROM articles' + where + ' ORDER BY created_at DESC LIMIT ? OFFSET ?', params);
   res.json({ total: total, page: page, size: size, items: items });
+});
+
+// Admin: All articles (including drafts) with is_published
+app.get('/api/admin/articles', auth, function(req, res) {
+  var u = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!u || u.role !== 'admin') return res.status(403).json({ detail: 'Admin only' });
+  var where = '';
+  var params = [];
+  if (req.query.category) { where = ' WHERE category = ?'; params.push(req.query.category); }
+  var total = queryOne('SELECT count(*) as total FROM articles' + where, params).total;
+  var items = queryAll('SELECT id, title, summary, category, tags, author, cover_image, view_count, is_published, created_at FROM articles' + where + ' ORDER BY created_at DESC', params);
+  res.json({ total: total, items: items });
 });
 
 // Article Image SVG - MUST come before :id route
@@ -995,6 +1001,14 @@ app.get('/api/shop/products', function(req, res) {
   res.json(queryAll(sql, params));
 });
 
+// Admin: All products (including inactive)
+app.get('/api/admin/products', auth, function(req, res) {
+  var u = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!u || u.role !== 'admin') return res.status(403).json({ detail: 'Admin only' });
+  var rows = queryAll('SELECT * FROM shop_products ORDER BY sales_count DESC', []);
+  res.json(rows);
+});
+
 // Get product detail
 app.get('/api/shop/products/:id', function(req, res) {
   var p = queryOne('SELECT * FROM shop_products WHERE id = ?', [Number(req.params.id)]);
@@ -1258,6 +1272,120 @@ app.post('/api/admin/backup', auth, function(req, res) {
   if (!u || u.role !== 'admin') return res.status(403).json({ detail: 'Admin only' });
   var bp = backupDb();
   res.json({ success: !!bp, path: bp });
+});
+
+// ===== Admin Dashboard =====
+app.get('/api/admin/dashboard', auth, function(req, res) {
+  var u = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!u || u.role !== 'admin') return res.status(403).json({ detail: 'Admin only' });
+  
+  try {
+    var totalUsers = queryOne('SELECT COUNT(*) as c FROM users').c;
+    var totalOrders = queryOne('SELECT COUNT(*) as c FROM shop_orders').c;
+    var totalRevenue = 0;
+    try { totalRevenue = queryOne('SELECT COALESCE(SUM(total_amount),0) as s FROM shop_orders WHERE status = \'paid\'').s; } catch(e) {}
+    var totalProducts = queryOne('SELECT COUNT(*) as c FROM shop_products').c;
+    var totalArticles = queryOne('SELECT COUNT(*) as c FROM articles').c;
+    var dbSize = 0;
+    try { dbSize = fs.statSync(DB_PATH).size; } catch(e) {}
+    
+    var recentOrders = [];
+    try {
+      recentOrders = queryAll('SELECT id, order_no, total_amount, status, created_at FROM shop_orders ORDER BY created_at DESC LIMIT 10');
+    } catch(e) {}
+    
+    res.json({
+      total_users: totalUsers,
+      total_orders: totalOrders,
+      total_revenue: totalRevenue,
+      product_count: totalProducts,
+      article_count: totalArticles,
+      db_size: (dbSize / 1024).toFixed(0) + ' KB',
+      uptime_seconds: Math.floor((Date.now() - startTime) / 1000),
+      recent_orders: recentOrders
+    });
+  } catch(e) {
+    res.status(500).json({ detail: e.message });
+  }
+});
+
+// ===== Admin Users =====
+app.get('/api/admin/users', auth, function(req, res) {
+  var u = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!u || u.role !== 'admin') return res.status(403).json({ detail: 'Admin only' });
+  
+  try {
+    var users = queryAll('SELECT id, username, nickname, role, avatar, constitution, is_vip, vip_expires, created_at FROM users ORDER BY id DESC LIMIT 100');
+    res.json(users);
+  } catch(e) {
+    res.json([]);
+  }
+});
+
+// ===== Admin: 操作用户 =====
+app.put('/api/admin/users/:id/role', auth, function(req, res) {
+  var u = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!u || u.role !== 'admin') return res.status(403).json({ detail: 'Admin only' });
+  var targetId = parseInt(req.params.id);
+  var role = req.body.role;
+  if (!['admin','user'].includes(role)) return res.status(400).json({ detail: 'Invalid role' });
+  try {
+    queryRun('UPDATE users SET role = ? WHERE id = ?', [role, targetId]);
+    res.json({ ok: true, role: role });
+  } catch(e) { res.status(500).json({ detail: e.message }); }
+});
+
+app.put('/api/admin/users/:id/vip', auth, function(req, res) {
+  var u = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!u || u.role !== 'admin') return res.status(403).json({ detail: 'Admin only' });
+  var targetId = parseInt(req.params.id);
+  var isVip = req.body.is_vip ? 1 : 0;
+  var expires = isVip ? new Date(Date.now() + 365 * 86400000).toISOString() : null;
+  try {
+    if (isVip) {
+      queryRun('UPDATE users SET is_vip = 1, vip_expires = ? WHERE id = ?', [expires, targetId]);
+    } else {
+      queryRun('UPDATE users SET is_vip = 0, vip_expires = NULL WHERE id = ?', [targetId]);
+    }
+    res.json({ ok: true, is_vip: isVip });
+  } catch(e) { res.status(500).json({ detail: e.message }); }
+});
+
+app.post('/api/admin/users/:id/reset-password', auth, function(req, res) {
+  var u = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!u || u.role !== 'admin') return res.status(403).json({ detail: 'Admin only' });
+  var targetId = parseInt(req.params.id);
+  var password = req.body.password;
+  if (!password || password.length < 6) return res.status(400).json({ detail: 'Password too short' });
+  try {
+    var hash = hashPw(password);
+    queryRun('UPDATE users SET hashed_password = ? WHERE id = ?', [hash, targetId]);
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ detail: e.message }); }
+});
+
+// ===== Admin: 文章状态切换 =====
+app.put('/api/articles/:id', auth, function(req, res) {
+  var u = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!u || u.role !== 'admin') return res.status(403).json({ detail: 'Admin only' });
+  var articleId = parseInt(req.params.id);
+  var isPublished = req.body.is_published;
+  try {
+    queryRun('UPDATE articles SET is_published = ? WHERE id = ?', [isPublished ? 1 : 0, articleId]);
+    res.json({ ok: true, is_published: isPublished ? 1 : 0 });
+  } catch(e) { res.status(500).json({ detail: e.message }); }
+});
+
+// ===== Admin: 商品状态切换 =====
+app.put('/api/shop/products/:id', auth, function(req, res) {
+  var u = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!u || u.role !== 'admin') return res.status(403).json({ detail: 'Admin only' });
+  var isActive = req.body.is_active;
+  var productId = parseInt(req.params.id);
+  try {
+    queryRun('UPDATE shop_products SET is_active = ? WHERE id = ?', [isActive ? 1 : 0, productId]);
+    res.json({ ok: true, is_active: isActive ? 1 : 0 });
+  } catch(e) { res.status(500).json({ detail: e.message }); }
 });
 
 // Start

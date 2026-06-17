@@ -1,17 +1,18 @@
-module.exports = {
-  apps: [
-    {
-      name: 'wellness-server',
-      script: 'server.js',
-      cwd: __dirname,
-      env: {
-        NODE_ENV: 'production',
-        WELLNESS_SECRET: '7519ab413fb10f9e4c224a223bc2fc0f8567d77884765ffd59aa02ad3d262bb2'
-      },
-      max_memory_restart: '300M',
-      error_file: 'logs/err.log',
-      out_file: 'logs/out.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss',
-    },
-  ],
-};
+{
+  "name": "wellness-app",
+  "script": "server.js",
+  "instances": 1,
+  "exec_mode": "fork",
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": 8000,
+    "WELLNESS_SECRET": "ICMvGJjRnKpN71z8bSfXkHP4Ftm3Q6VWDYExsyOe5L2qUhol"
+  },
+  "error_file": "logs/pm2-error.log",
+  "out_file": "logs/pm2-out.log",
+  "merge_logs": true,
+  "max_memory_restart": "500M",
+  "autorestart": true,
+  "max_restarts": 10,
+  "restart_delay": 5000
+}

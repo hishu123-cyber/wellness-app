@@ -1393,3 +1393,195 @@ body::before {
 [data-theme="dark"] .card {
   border-color: rgba(139,115,85,0.12);
 }
+
+/* ===== 管理后台样式 ===== */
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.admin-stat-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.admin-stat-icon {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+.admin-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--green);
+}
+.admin-stat-label {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.admin-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 12px 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  cursor: pointer;
+  font-size: 13px;
+  text-align: center;
+  transition: all .2s;
+  color: var(--text);
+  font-family: inherit;
+}
+.admin-btn:hover {
+  border-color: var(--green);
+  background: rgba(76,175,80,0.05);
+}
+.admin-btn span {
+  display: block;
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.status-approved {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+.status-rejected {
+  background: #FFEBEE;
+  color: #C62828;
+}
+.status-pending {
+  background: #FFF8E1;
+  color: #F57F17;
+}
+.provider-card {
+  transition: all .2s;
+}
+.provider-card:active {
+  transform: scale(0.98);
+  opacity: 0.8;
+}
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+.empty-state p {
+  color: var(--text2);
+  font-size: 14px;
+}
+
+[data-theme="dark"] .admin-stat-card {
+  background: rgba(255,255,255,0.04);
+}
+[data-theme="dark"] .admin-btn {
+  background: rgba(255,255,255,0.04);
+}
+[data-theme="dark"] .status-approved {
+  background: rgba(46,125,50,0.2);
+  color: #81C784;
+}
+[data-theme="dark"] .status-rejected {
+  background: rgba(198,40,40,0.2);
+  color: #EF9A9A;
+}
+[data-theme="dark"] .status-pending {
+  background: rgba(245,127,23,0.2);
+  color: #FFD54F;
+}
+
+/* ── Admin Panel v2 增强样式 ── */
+
+/* 用户卡片 */
+.admin-user-card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: transform 0.15s;
+}
+.admin-user-card:active {
+  transform: scale(0.98);
+}
+
+/* 操作按钮（小） */
+.admin-action-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+.admin-action-btn:hover {
+  background: rgba(0,0,0,0.06);
+}
+[data-theme="dark"] .admin-action-btn:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+/* 摘要统计条 */
+.admin-summary-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text2);
+  background: var(--card-bg);
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.admin-summary-bar span {
+  background: var(--page-bg);
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.admin-summary-bar b {
+  color: var(--text);
+}
+
+/* Dashboard 两行统计 */
+.admin-stat-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  border-top: 3px solid var(--green);
+  min-width: 0;
+}
+.admin-stat-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+.admin-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1.2;
+}
+.admin-stat-label {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 2px;
+}

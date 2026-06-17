@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2D6A3F"/>
+      <stop offset="100%" style="stop-color:#1B3A2D"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7CB342"/>
+      <stop offset="100%" style="stop-color:#4A7C59"/>
+    </linearGradient>
+    <linearGradient id="drop" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#81D4FA"/>
+      <stop offset="100%" style="stop-color:#4FC3F7"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="100" fill="url(#bg)"/>
+  
+  <!-- Decorative circle -->
+  <circle cx="256" cy="256" r="160" fill="rgba(255,255,255,0.04)"/>
+  <circle cx="256" cy="256" r="120" fill="rgba(255,255,255,0.04)"/>
+  
+  <!-- Leaf 1 (large, main) -->
+  <path d="M256 380 C200 340, 150 280, 155 210 C160 150, 210 120, 270 135 C330 150, 380 210, 360 280 C340 350, 300 360, 256 380 Z" 
+    fill="url(#leaf)" opacity="0.9"/>
+  <!-- Leaf vein -->
+  <path d="M256 365 C250 320, 230 270, 220 220" 
+    stroke="rgba(255,255,255,0.3)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  
+  <!-- Leaf 2 (small, accent) -->
+  <path d="M295 330 C340 300, 370 250, 360 210 C350 170, 310 165, 280 180 C250 195, 250 240, 270 285 C285 320, 280 340, 295 330 Z" 
+    fill="#8BC34A" opacity="0.8"/>
+  
+  <!-- Water drop (TCM/balance symbol) -->
+  <path d="M200 185 C200 165, 215 155, 225 155 C235 155, 250 165, 250 185 C250 200, 225 215, 225 215 C225 215, 200 200, 200 185 Z" 
+    fill="url(#drop)" opacity="0.7"/>
+  
+  <!-- Small decorative dots -->
+  <circle cx="320" cy="340" r="8" fill="rgba(255,255,255,0.15)"/>
+  <circle cx="340" cy="310" r="5" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="170" cy="300" r="6" fill="rgba(255,255,255,0.08)"/>
+</svg>
