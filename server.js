@@ -1395,9 +1395,23 @@ async function start() {
     var teaService = require("./tea_service");
     teaService.setupTeaRoutes(app, auth);
     var SQL = await initSqlJs();
-    var buf = fs.readFileSync(DB_PATH);
-    db = new SQL.Database(buf);
-    log.info('数据库已加载');
+    var buf;
+    try {
+      buf = fs.readFileSync(DB_PATH);
+    } catch (readErr) {
+      if (readErr.code === 'ENOENT') {
+        log.warn('数据库文件不存在，自动初始化中...');
+        var initDb = require('./lib/init-db');
+        db = await initDb.initDb(DB_PATH);
+        log.info('数据库已自动初始化');
+      } else {
+        throw readErr;
+      }
+    }
+    if (!db) {
+      db = new SQL.Database(buf);
+      log.info('数据库已加载');
+    }
 
     // 启动时备份
     backupDb();
